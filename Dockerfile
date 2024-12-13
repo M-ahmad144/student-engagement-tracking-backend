@@ -16,6 +16,5 @@ COPY . .
 # Expose port 8000 for the app
 EXPOSE 8000
 
-# Command to run the server
-CMD ["npm", "server.js"]
-# CMD [ "npm", "start" ]
+# Start the app
+CMD [ "npm", "start" ]
