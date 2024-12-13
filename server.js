@@ -12,7 +12,7 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-const port = 3000;
+const port = 8000;
 
 connectDB();
 const server = app.listen(port, () => {
