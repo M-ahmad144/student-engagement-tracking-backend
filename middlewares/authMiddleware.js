@@ -20,7 +20,6 @@ exports.authMiddleware = asyncHandler(async (req, res, next) => {
       );
     }
 
-    // Attach user to request object
     req.user = user;
     next();
   } catch (error) {

@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: [8, "Password must be at least 8 characters"],
       maxlength: [128, "Password must be less than 128 characters"],
-      select: false, // Excludes password from query results by default for security
+      select: false,
     },
     isAdmin: {
       type: Boolean,
