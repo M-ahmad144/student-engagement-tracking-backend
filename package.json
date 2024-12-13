@@ -2,7 +2,8 @@
   "name": "engagement-tracking",
   "version": "1.0.0",
   "scripts": {
-    "server": "nodemon server.js"
+    "server": "nodemon server.js",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
