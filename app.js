@@ -15,7 +15,13 @@ const errorMiddleware = require("./middlewares/error");
 const userRoutes = require("./routes/userRoutes");
 
 // Middleware setup
-app.use(cors());
+const corsOptions = {
+  origin: 'http://localhost:5173',"https://engageify.vercel.app" ,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With','X-CSRF-Token','X-HTTP-Method-Override'],
+};
+
+app.use(cors(corsOptions)); // Enable CORS for your frontend URL
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(helmet());
