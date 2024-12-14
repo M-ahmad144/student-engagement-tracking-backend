@@ -6,10 +6,6 @@ const ErrorHandler = require("../utils/errorHandler");
 exports.authMiddleware = asyncHandler(async (req, res, next) => {
   const token = req.cookies.jwt;
 
-  if (!token) {
-    return next(new ErrorHandler("No token, authorization denied", 401));
-  }
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.userId);
