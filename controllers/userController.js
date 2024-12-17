@@ -164,24 +164,3 @@ exports.getUserById = asyncHandler(async (req, res, next) => {
     user,
   });
 });
-
-//update user by id
-exports.updateUserByAdmin = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
-  if (!user) {
-    return next(new ErrorHandler("User not found", 404));
-  }
-  if (req.body.username) user.username = req.body.username || user.username;
-  if (req.body.email) user.email = req.body.email || user.email;
-  if (req.body.isAdmin) user.isAdmin = Boolean(req.body.isAdmin);
-  await user.save({ validateBeforeSave: true });
-  res.status(200).json({
-    success: true,
-    data: {
-      id: user._id,
-      username: user.username,
-      email: user.email,
-      isAdmin: user.isAdmin,
-    },
-  });
-});
