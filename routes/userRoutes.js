@@ -4,16 +4,12 @@ const {
   signupUser,
   loginUser,
   logoutCurrentUser,
-  getAllUsers,
   getCurrentUserProfile,
   updateCurrentUserProfile,
-  deleteUser,
-  getUserById,
-  updateUserByAdmin,
 } = require("../controllers/userController");
 
 // Middleware imports
-const { authMiddleware, authAdmin } = require("../middlewares/authMiddleware");
+const { authMiddleware } = require("../middlewares/authMiddleware");
 
 // Public authentication routes
 router.post("/register", signupUser);
@@ -25,14 +21,6 @@ router.use(authMiddleware);
 
 // Profile routes (user-protected routes)
 router.get("/profile", getCurrentUserProfile);
-router.patch("/profile", updateCurrentUserProfile); // Make sure the path matches frontend
-
-// Admin routes
-router.get("/", authAdmin, getAllUsers);
-router
-  .route("/:id")
-  .get(authAdmin, getUserById)
-  .patch(authAdmin, updateUserByAdmin)
-  .delete(authAdmin, deleteUser);
+router.patch("/profile", updateCurrentUserProfile);
 
 module.exports = router;
