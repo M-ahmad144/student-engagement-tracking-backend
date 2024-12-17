@@ -23,6 +23,7 @@ exports.signupUser = asyncHandler(async (req, res, next) => {
       username: newUser.username,
       email: newUser.email,
       isAdmin: newUser.isAdmin,
+      token,
     },
   });
 });
