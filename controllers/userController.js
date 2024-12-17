@@ -15,7 +15,7 @@ exports.signupUser = asyncHandler(async (req, res, next) => {
   }
   const newUser = await User.create({ username, email, password });
   // Generate token and set it as a cookie
-  generateToken(res, newUser._id);
+  const token = generateToken(res, newUser._id);
   res.status(201).json({
     success: true,
     data: {
@@ -38,7 +38,7 @@ exports.loginUser = asyncHandler(async (req, res, next) => {
   if (!isMatch) {
     return next(new ErrorHandler("Invalid credentials", 401));
   }
-  generateToken(res, user._id);
+  const token = generateToken(res, user._id);
   res.status(200).json({
     success: true,
     data: {
@@ -46,6 +46,7 @@ exports.loginUser = asyncHandler(async (req, res, next) => {
       username: user.username,
       email: user.email,
       isAdmin: user.isAdmin,
+      token,
     },
   });
 });
