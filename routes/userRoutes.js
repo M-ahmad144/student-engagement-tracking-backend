@@ -25,7 +25,7 @@ router.use(authMiddleware);
 
 // Profile routes (user-protected routes)
 router.get("/profile", getCurrentUserProfile);
-router.patch("/profile-update", updateCurrentUserProfile);
+router.patch("/profile", updateCurrentUserProfile);
 
 // Admin routes
 router.get("/", authAdmin, getAllUsers);
