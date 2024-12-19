@@ -2,9 +2,10 @@ const Student = require("../models/studentModel");
 
 // Add a new student
 const addStudent = async (req, res) => {
-  const { name, rollNo, subject, section, session, teacher } = req.body;
-
   try {
+    const { name, rollNo, subject, section, session, teacher } = req.body;
+    console.log(req.body);
+
     const student = new Student({
       name,
       rollNo,
