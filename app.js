@@ -36,14 +36,6 @@ app.use(helmet());
 // Trust proxy setting (to fix the `X-Forwarded-For` issue)
 app.set("trust proxy", true); // Add this line to trust the proxy
 
-// Rate limiting setup
-app.use(
-  rateLimit({
-    windowMs: 5 * 60 * 1000,
-    max: 100, // Limit each IP to 100 requests per windowMs
-  })
-);
-
 app.use(mongoSanitize());
 app.use(xss());
 app.use(hpp());
