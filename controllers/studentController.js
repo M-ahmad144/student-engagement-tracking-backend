@@ -4,7 +4,14 @@ const Student = require("../models/studentModel");
 const addStudent = async (req, res) => {
   try {
     const { name, rollNo, className } = req.body;
-    const newStudent = new Student({ name, rollNo, className });
+    const newStudent = new Student({
+      name,
+      rollNo,
+      subject,
+      section,
+      session,
+      teacher,
+    });
     await newStudent.save();
     res.status(201).json(newStudent);
   } catch (error) {
