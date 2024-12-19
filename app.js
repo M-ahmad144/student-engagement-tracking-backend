@@ -32,12 +32,18 @@ app.use(cors(corsOptions)); // Enable CORS for your frontend URL
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(helmet());
+
+// Trust proxy setting (to fix the `X-Forwarded-For` issue)
+app.set("trust proxy", true); // Add this line to trust the proxy
+
+// Rate limiting setup
 app.use(
   rateLimit({
     windowMs: 5 * 60 * 1000,
     max: 100, // Limit each IP to 100 requests per windowMs
   })
 );
+
 app.use(mongoSanitize());
 app.use(xss());
 app.use(hpp());
@@ -52,7 +58,8 @@ app.use(express.static(path.join(__dirname, "public")));
 // Import and use routes
 app.use("/api/users", userRoutes);
 app.use("/api/students", studentRoutes);
-// error middleware
+
+// Error handling middleware
 app.use(errorMiddleware);
 
 module.exports = app;
