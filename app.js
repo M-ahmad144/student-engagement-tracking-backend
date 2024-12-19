@@ -13,6 +13,7 @@ const errorMiddleware = require("./middlewares/error");
 
 // Routes
 const userRoutes = require("./routes/userRoutes");
+const studentRoutes = require("./routes/studentRoutes");
 
 // Middleware setup
 const corsOptions = {
@@ -50,7 +51,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Import and use routes
 app.use("/api/users", userRoutes);
-
+app.use("/api/students", studentRoutes);
 // error middleware
 app.use(errorMiddleware);
 
