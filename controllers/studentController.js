@@ -3,7 +3,9 @@ const Student = require("../models/studentModel");
 // Add a new student
 const addStudent = async (req, res) => {
   try {
-    const { name, rollNo, className } = req.body;
+    // Destructure fields from request body
+    const { name, rollNo, subject, section, session, teacher } = req.body;
+
     const newStudent = new Student({
       name,
       rollNo,
@@ -12,10 +14,21 @@ const addStudent = async (req, res) => {
       session,
       teacher,
     });
+
+    // Save the student to the database
     await newStudent.save();
+
+    // Return the newly created student
     res.status(201).json(newStudent);
   } catch (error) {
-    res.status(500).json({ error: "Failed to add student" });
+    // Log the error for debugging
+    console.error(error);
+
+    // Send a generic error response
+    res.status(500).json({
+      error: "Failed to add student",
+      message: error.message, // Include the actual error message for debugging
+    });
   }
 };
 
