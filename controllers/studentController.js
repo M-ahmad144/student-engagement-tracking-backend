@@ -4,9 +4,19 @@ const Student = require("../models/studentModel");
 const addStudent = async (req, res) => {
   try {
     const { name, rollNo, subject, section, session, teacher } = req.body;
-    console.log(req.body);
 
-    const student = new Student({
+    // Check if all required fields are provided
+    if (!name || !rollNo || !subject || !section || !session || !teacher) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // Check if the rollNo already exists
+    const existingStudent = await Student.findOne({ rollNo });
+    if (existingStudent) {
+      return res.status(400).json({ error: "Roll number must be unique" });
+    }
+
+    const newStudent = new Student({
       name,
       rollNo,
       subject,
@@ -14,9 +24,17 @@ const addStudent = async (req, res) => {
       session,
       teacher,
     });
-    await student.save();
-    res.status(201).json(student);
+
+    await newStudent.save();
+    res.status(201).json(newStudent);
   } catch (error) {
+    console.error(error);
+    // Catch validation error and send appropriate response
+    if (error.name === "ValidationError") {
+      return res
+        .status(400)
+        .json({ error: `Validation error: ${error.message}` });
+    }
     res.status(500).json({ error: "Failed to add student" });
   }
 };
