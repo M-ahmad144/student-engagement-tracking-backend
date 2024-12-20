@@ -3,6 +3,8 @@ const Student = require("../models/studentModel");
 // Add a new student
 const addStudent = async (req, res) => {
   try {
+    console.log("Received data:", req.body); // Log the received request body
+
     const { name, rollNo, subject, section, session, teacher } = req.body;
 
     // Check if all required fields are provided
@@ -65,16 +67,40 @@ const getStudentById = async (req, res) => {
 // Update student
 const updateStudent = async (req, res) => {
   try {
+    console.log("Received data:", req.body); // Log the received request body
+    const { id } = req.params;
+    const { name, rollNo, subject, section, session, teacher } = req.body;
+
+    // Check if all required fields are provided
+    if (!name || !rollNo || !subject || !section || !session || !teacher) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // Check if the rollNo already exists (except for the current student)
+    const existingStudent = await Student.findOne({ rollNo, _id: { $ne: id } });
+    if (existingStudent) {
+      return res.status(400).json({ error: "Roll number must be unique" });
+    }
+
+    // Update the student data
     const updatedStudent = await Student.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
+      id,
+      { name, rollNo, subject, section, session, teacher }, // Ensure section is included here
+      { new: true, runValidators: true } // Ensures that the updated document is returned
     );
+
     if (!updatedStudent) {
       return res.status(404).json({ error: "Student not found" });
     }
-    res.json(updatedStudent);
+
+    res.status(200).json(updatedStudent); // Return the updated student
   } catch (error) {
+    console.error(error);
+    if (error.name === "ValidationError") {
+      return res
+        .status(400)
+        .json({ error: `Validation error: ${error.message}` });
+    }
     res.status(500).json({ error: "Failed to update student" });
   }
 };
@@ -93,23 +119,54 @@ const deleteStudent = async (req, res) => {
 };
 
 const saveEngagementResult = async (req, res) => {
+  console.log("Received data:", req.body); // Log the received request body
   try {
-    const { videoName, engagementResults } = req.body;
+    const {
+      rollNo,
+      finalEngagementStatus,
+      engagementCategory,
+      engagementPercentage,
+    } = req.body;
 
-    // Extract roll number from videoName (e.g., "122.mp4")
-    const rollNo = videoName.split(".")[0];
+    // Validate input
+    if (
+      !rollNo ||
+      !finalEngagementStatus ||
+      !engagementCategory ||
+      !engagementPercentage
+    ) {
+      return res.status(400).json({
+        error:
+          "rollNo, finalEngagementStatus, engagementCategory, and engagementPercentage are required",
+      });
+    }
 
+    // Find student by rollNo
     const student = await Student.findOne({ rollNo });
+
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
     }
 
-    // Save engagement result to student
-    student.results.push({ videoName, engagementResults });
+    // Create the engagement result object
+    const engagementResult = {
+      rollNo,
+      finalEngagementStatus,
+      engagementCategory,
+      engagementPercentage: parseFloat(engagementPercentage),
+      dateTime: new Date(),
+    };
+
+    // Save the engagement result to the student's results array
+    student.results.push(engagementResult);
+
+    // Save the student with the updated results array
     await student.save();
 
+    // Send success response
     res.json({ message: "Engagement result saved successfully", student });
   } catch (error) {
+    console.error("Error saving engagement result:", error);
     res.status(500).json({ error: "Failed to save engagement result" });
   }
 };
