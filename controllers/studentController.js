@@ -5,12 +5,8 @@ const addStudent = async (req, res) => {
   try {
     console.log("Received data:", req.body); // Log the received request body
 
-    const { name, rollNo, subject, section, session, teacher } = req.body;
-
-    // Check if all required fields are provided
-    if (!name || !rollNo || !subject || !section || !session || !teacher) {
-      return res.status(400).json({ error: "All fields are required" });
-    }
+    const { name, rollNo, subject, section, session, teacher, department } =
+      req.body;
 
     // Check if the rollNo already exists
     const existingStudent = await Student.findOne({ rollNo });
@@ -25,6 +21,7 @@ const addStudent = async (req, res) => {
       section,
       session,
       teacher,
+      department,
     });
 
     await newStudent.save();
@@ -171,6 +168,43 @@ const saveEngagementResult = async (req, res) => {
   }
 };
 
+const EngagementResults = async (req, res) => {
+  try {
+    const { department, section, session, teacher } = req.query;
+
+    // Initialize filter object
+    let filter = {};
+
+    // Add query parameters to the filter if provided
+    if (department) filter.department = department;
+    if (section) filter.section = section;
+    if (session) filter.session = session;
+    if (teacher) filter.teacher = teacher;
+
+    // Fetch students and populate the results field
+    const students = await Student.find(filter)
+      .select("name rollNo subject section session teacher department results") // Include all desired fields
+      .populate({
+        path: "results", // Path to populate (if it refers to another collection, ensure it's referenced correctly)
+        options: { sort: { dateTime: -1 } }, // Sort results by dateTime in descending order
+      })
+      .exec();
+
+    // Check if no students found
+    if (!students || students.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No students found with the provided filters." });
+    }
+
+    // Send filtered results back to the client
+    res.status(200).json(students);
+  } catch (error) {
+    console.error("Error fetching students:", error); // Log the error
+    res.status(500).json({ error: "Failed to fetch engagement results" });
+  }
+};
+
 module.exports = {
   addStudent,
   getAllStudents,
@@ -178,4 +212,5 @@ module.exports = {
   updateStudent,
   deleteStudent,
   saveEngagementResult,
+  EngagementResults,
 };

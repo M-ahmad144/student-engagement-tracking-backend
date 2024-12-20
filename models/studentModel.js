@@ -14,6 +14,7 @@ const studentSchema = new mongoose.Schema({
   section: { type: String, required: true },
   session: { type: String, required: true },
   teacher: { type: String, required: true },
+  department: { type: String, required: true },
 
   results: [resultSchema], // Array of results for different videos
 });

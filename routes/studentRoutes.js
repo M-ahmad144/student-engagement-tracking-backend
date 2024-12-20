@@ -6,23 +6,23 @@ const {
   updateStudent,
   deleteStudent,
   saveEngagementResult,
+  EngagementResults,
 } = require("../controllers/studentController");
 
 const router = express.Router();
+router.get("/engagement-results", EngagementResults);
 
 // Student CRUD Routes
-router
-  .route("/")
-  .get(getAllStudents) // Get all students
-  .post(addStudent); // Add a new student
+router.route("/").get(getAllStudents).post(addStudent);
 
 router
   .route("/:id")
-  .get(getStudentById) // Get a single student by ID
-  .put(updateStudent) // Update a student by ID
-  .delete(deleteStudent); // Delete a student by ID
-
+  .get(getStudentById)
+  .put(updateStudent)
+  .delete(deleteStudent);
 // Save engagement results for a student based on video label
 router.route("/engagement").post(saveEngagementResult);
+
+console.log("Registering student engagement results route");
 
 module.exports = router;
