@@ -4,8 +4,8 @@ const User = require("../models/userModel");
 const ErrorHandler = require("../utils/errorHandler");
 
 exports.authMiddleware = asyncHandler(async (req, res, next) => {
-  // Ensure cookies are being parsed by cookie-parser middleware
-  const token = req.cookies.jwt;
+  // Get the token from the Authorization header (Bearer token)
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token from "Bearer <token>"
 
   if (!token) {
     return next(new ErrorHandler("No token, authorization denied", 401));
@@ -39,13 +39,4 @@ exports.authMiddleware = asyncHandler(async (req, res, next) => {
 
     return next(new ErrorHandler("Invalid or expired token", 401));
   }
-});
-
-// Admin check middleware
-exports.authAdmin = asyncHandler((req, res, next) => {
-  // Ensure that the user is admin
-  if (!req.user || !req.user.isAdmin) {
-    return next(new ErrorHandler("Access denied. Admins only.", 403));
-  }
-  next();
 });
