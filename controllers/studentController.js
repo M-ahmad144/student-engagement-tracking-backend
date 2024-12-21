@@ -66,12 +66,8 @@ const updateStudent = async (req, res) => {
   try {
     console.log("Received data:", req.body); // Log the received request body
     const { id } = req.params;
-    const { name, rollNo, subject, section, session, teacher } = req.body;
-
-    // Check if all required fields are provided
-    if (!name || !rollNo || !subject || !section || !session || !teacher) {
-      return res.status(400).json({ error: "All fields are required" });
-    }
+    const { name, rollNo, subject, section, session, teacher, department } =
+      req.body;
 
     // Check if the rollNo already exists (except for the current student)
     const existingStudent = await Student.findOne({ rollNo, _id: { $ne: id } });
@@ -82,7 +78,7 @@ const updateStudent = async (req, res) => {
     // Update the student data
     const updatedStudent = await Student.findByIdAndUpdate(
       id,
-      { name, rollNo, subject, section, session, teacher }, // Ensure section is included here
+      { name, rollNo, subject, section, session, teacher, department },
       { new: true, runValidators: true } // Ensures that the updated document is returned
     );
 
