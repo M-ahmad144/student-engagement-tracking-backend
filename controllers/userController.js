@@ -86,44 +86,28 @@ exports.getCurrentUserProfile = asyncHandler(async (req, res, next) => {
   });
 });
 
-//update current user profile
 exports.updateCurrentUserProfile = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.user._id).select("+password");
+  const { username, email } = req.body;
+
+  // Validate if userId is provided
+  if (!email) {
+    return next(new ErrorHandler("User ID is required", 400));
+  }
+
+  // Find the user by the given userId
+  const user = await User.findOne({ email });
   if (!user) {
     return next(new ErrorHandler("User doesn't exist", 404));
   }
 
-  // Update profile information
-  if (req.body.username) user.username = req.body.username;
-  if (req.body.email) user.email = req.body.email;
+  // Update user information
+  if (username) user.username = username;
+  if (email) user.email = email;
 
-  // Update password if provided
-  if (req.body.password) {
-    // Check if current password is provided and correct
-    if (!req.body.currentPassword) {
-      return next(
-        new ErrorHandler("Current password is required to update password", 400)
-      );
-    }
-
-    const isPasswordCorrect = await user.correctPassword(
-      req.body.currentPassword,
-      user.password
-    );
-    if (!isPasswordCorrect) {
-      return next(new ErrorHandler("Incorrect current password", 401));
-    }
-
-    user.password = req.body.password;
-  }
-
+  // Save the updated user information
   await user.save({ validateBeforeSave: true });
 
-  // Generate a new token if password was changed
-  if (req.body.password) {
-    generateToken(res, user._id);
-  }
-
+  // Send response with updated user details
   res.status(200).json({
     success: true,
     data: {
@@ -131,9 +115,7 @@ exports.updateCurrentUserProfile = asyncHandler(async (req, res, next) => {
       username: user.username,
       email: user.email,
     },
-    message: req.body.password
-      ? "Profile and password updated successfully"
-      : "Profile updated successfully",
+    message: "Profile updated successfully", // No password involved here
   });
 });
 
